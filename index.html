@@ -1,51 +1,337 @@
-PRJOECT BY @torque
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Team India — Cricket Stats</title>
+  <title>India Cricket Hub</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0f; color: #fff; min-height: 100vh; }
-    .hero { background: linear-gradient(135deg, #003580, #001f4d, #0a0a0f); padding: 50px 20px; text-align: center; }
-    .flag { font-size: 4rem; margin-bottom: 12px; }
-    .hero h1 { font-size: 2.2rem; color: #fff; margin-bottom: 8px; }
-    .hero p { color: #88aaff; letter-spacing: 2px; font-size: 0.85rem; }
-    .section { max-width: 750px; margin: 0 auto; padding: 30px 16px; }
-    .section h2 { font-size: 0.75rem; letter-spacing: 3px; color: #4488ff; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid #1a1a2e; padding-bottom: 8px; }
-    .match-card { background: #0d0d1a; border: 1px solid #1a1a3a; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; }
-    .match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .match-vs { font-size: 1rem; font-weight: 600; }
-    .match-result { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; background: #0a2a0a; color: #4caf50; }
-    .match-detail { font-size: 0.8rem; color: #666; }
-    .loading { text-align: center; color: #666; padding: 40px; font-size: 0.9rem; }
+    body { font-family: 'Inter', sans-serif; background: #060810; color: #fff; }
+
+    /* HERO */
+    .hero {
+      min-height: 60vh;
+      background: radial-gradient(ellipse at 50% 0%, #001a6e 0%, #000d3d 40%, #060810 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 60px 20px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '🏏'; font-size: 250px; position: absolute;
+      opacity: 0.05; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+    .hero-flag { font-size: 5rem; margin-bottom: 16px; }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 7vw, 4rem);
+      background: linear-gradient(135deg, #fff, #88aaff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .hero p { color: #88aaff; letter-spacing: 3px; font-size: 0.8rem; }
+    .hero-badges { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+    .badge-pill { background: #001a6e44; border: 1px solid #4488ff44; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; color: #88aaff; }
+
+    /* SECTION */
+    .section { max-width: 800px; margin: 0 auto; padding: 40px 16px; }
+    .section-title {
+      font-size: 0.7rem; letter-spacing: 4px; color: #4488ff;
+      text-transform: uppercase; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: #4488ff22; }
+
+    /* STATS GRID */
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
     @media(min-width: 500px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-    .stat-card { background: #0d0d1a; border: 1px solid #1a1a3a; border-radius: 12px; padding: 20px; text-align: center; }
-    .stat-num { font-size: 2rem; font-weight: 700; color: #4488ff; }
-    .stat-label { font-size: 0.7rem; color: #666; margin-top: 4px; letter-spacing: 1px; }
+    .stat-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 22px 16px; text-align: center; }
+    .stat-num { font-size: 2.2rem; font-weight: 700; color: #4488ff; font-family: 'Playfair Display', serif; }
+    .stat-label { font-size: 0.65rem; color: #555; margin-top: 6px; letter-spacing: 2px; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 8px 18px; border-radius: 20px; border: 1px solid #1a2040; background: #0a0d1a; color: #666; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .tab.active { background: #4488ff; color: #fff; border-color: #4488ff; }
+    .format-tabs { display: none; }
+    .format-tabs.active { display: block; }
+
+    /* PLAYER CARD */
+    .player-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; transition: border-color 0.2s; }
+    .player-card:hover { border-color: #4488ff44; }
+    .player-rank { font-size: 1.4rem; min-width: 36px; text-align: center; font-family: 'Playfair Display', serif; color: #4488ff; }
+    .player-info { flex: 1; }
+    .player-info h3 { font-size: 0.95rem; margin-bottom: 3px; }
+    .player-info p { font-size: 0.75rem; color: #666; }
+    .player-stat { text-align: right; }
+    .player-stat .num { font-size: 1.3rem; font-weight: 700; color: #4488ff; }
+    .player-stat .lbl { font-size: 0.6rem; color: #555; letter-spacing: 1px; }
+
+    /* SQUAD CARD */
+    .squad-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media(min-width: 500px) { .squad-grid { grid-template-columns: repeat(3, 1fr); } }
+    .squad-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 16px; text-align: center; }
+    .squad-emoji { font-size: 2rem; margin-bottom: 8px; }
+    .squad-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+    .squad-role { font-size: 0.7rem; color: #666; }
+    .captain-badge { font-size: 0.6rem; background: #ffd70022; color: #ffd700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
+
+    /* LEAGUE CARD */
+    .league-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .league-name { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+    .league-sub { font-size: 0.75rem; color: #666; }
+    .status-badge { font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; }
+    .ongoing { background: #0a2a0a; color: #4caf50; }
+    .upcoming { background: #0a1a2a; color: #4488ff; }
+
+    /* RECORD CARD */
+    .record-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 20px; margin-bottom: 10px; }
+    .record-label { font-size: 0.65rem; color: #666; letter-spacing: 2px; margin-bottom: 8px; }
+    .record-value { font-size: 1.8rem; font-weight: 700; color: #ffd700; font-family: 'Playfair Display', serif; }
+    .record-detail { font-size: 0.8rem; color: #888; margin-top: 4px; }
+
+    /* HISTORY */
+    .timeline { position: relative; }
+    .timeline-item { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 18px 20px; margin-bottom: 10px; display: flex; gap: 16px; }
+    .timeline-year { font-size: 1.2rem; font-weight: 700; color: #ffd700; min-width: 50px; font-family: 'Playfair Display', serif; }
+    .timeline-content h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .timeline-content p { font-size: 0.8rem; color: #666; }
+
+    /* YOUNG TALENT */
+    .talent-card { background: #0a0d1a; border: 1px solid #1a2040; border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; }
+    .talent-emoji { font-size: 2rem; }
+    .talent-info { flex: 1; }
+    .talent-info h3 { font-size: 0.95rem; margin-bottom: 3px; }
+    .talent-info p { font-size: 0.75rem; color: #666; }
+    .talent-tag { font-size: 0.65rem; background: #ffd70022; color: #ffd700; padding: 3px 10px; border-radius: 10px; }
+
+    .loading { text-align: center; color: #555; padding: 30px; font-size: 0.85rem; }
+    footer { text-align: center; padding: 40px 20px; color: #333; font-size: 0.75rem; letter-spacing: 2px; border-top: 1px solid #0d1020; }
+    footer span { color: #4488ff; }
   </style>
 </head>
 <body>
+
+  <!-- HERO -->
   <div class="hero">
-    <div class="flag">🇮🇳</div>
-    <h1>Team India</h1>
-    <p>LIVE CRICKET DATA · POWERED BY CRICBUZZ</p>
+    <div class="hero-flag">🇮🇳</div>
+    <h1>India Cricket Hub</h1>
+    <p>LIVE DATA · STATS · SQUAD · HISTORY · RECORDS</p>
+    <div class="hero-badges">
+      <span class="badge-pill">🏆 World Champions</span>
+      <span class="badge-pill">📊 #1 Test Team</span>
+      <span class="badge-pill">⚡ Powered by Cricbuzz</span>
+    </div>
   </div>
 
+  <!-- RANKINGS -->
   <div class="section">
-    <h2>Team Overview</h2>
+    <div class="section-title">ICC Rankings</div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-num">#1</div><div class="stat-label">TEST RANKING</div></div>
-      <div class="stat-card"><div class="stat-num">#2</div><div class="stat-label">ODI RANKING</div></div>
-      <div class="stat-card"><div class="stat-num">#4</div><div class="stat-label">T20 RANKING</div></div>
+      <div class="stat-card"><div class="stat-num">#1</div><div class="stat-label">TEST</div></div>
+      <div class="stat-card"><div class="stat-num">#2</div><div class="stat-label">ODI</div></div>
+      <div class="stat-card"><div class="stat-num">#4</div><div class="stat-label">T20I</div></div>
       <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">ICC TITLES</div></div>
     </div>
-
-    <h2>Live Matches</h2>
-    <div id="matches"><div class="loading">Loading live matches...</div></div>
   </div>
+
+  <!-- LIVE MATCHES -->
+  <div class="section">
+    <div class="section-title">Live Matches</div>
+    <div id="matches"><div class="loading">⏳ Loading live matches...</div></div>
+  </div>
+
+  <!-- LEAGUES -->
+  <div class="section">
+    <div class="section-title">Indian Leagues</div>
+    <div class="league-card">
+      <div><div class="league-name">🏆 IPL 2025</div><div class="league-sub">Indian Premier League · T20 · 10 Teams</div></div>
+      <span class="status-badge ongoing">● Ongoing</span>
+    </div>
+    <div class="league-card">
+      <div><div class="league-name">🏏 Ranji Trophy</div><div class="league-sub">First Class · Red Ball · 38 Teams</div></div>
+      <span class="status-badge upcoming">Next Season</span>
+    </div>
+    <div class="league-card">
+      <div><div class="league-name">⚡ Syed Mushtaq Ali Trophy</div><div class="league-sub">Domestic T20 · BCCI</div></div>
+      <span class="status-badge upcoming">Next Season</span>
+    </div>
+    <div class="league-card">
+      <div><div class="league-name">🎯 Vijay Hazare Trophy</div><div class="league-sub">Domestic ODI · BCCI</div></div>
+      <span class="status-badge upcoming">Next Season</span>
+    </div>
+    <div class="league-card">
+      <div><div class="league-name">🌟 Duleep Trophy</div><div class="league-sub">Zonal Red Ball · BCCI</div></div>
+      <span class="status-badge upcoming">Next Season</span>
+    </div>
+  </div>
+
+  <!-- CURRENT SQUAD -->
+  <div class="section">
+    <div class="section-title">Current Squad</div>
+    <div class="tabs">
+      <div class="tab active" onclick="showSquad('test', this)">TEST</div>
+      <div class="tab" onclick="showSquad('odi', this)">ODI</div>
+      <div class="tab" onclick="showSquad('t20', this)">T20I</div>
+    </div>
+    <div id="squad-test" class="format-tabs active">
+      <div class="squad-grid">
+        <div class="squad-card"><div class="squad-emoji">👑</div><div class="squad-name">Rohit Sharma</div><div class="squad-role">Right Hand Bat</div><span class="captain-badge">CAPTAIN</span></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Virat Kohli</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Shubman Gill</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">KL Rahul</div><div class="squad-role">WK Batter</div></div>
+        <div class="squad-card"><div class="squad-emoji">🎳</div><div class="squad-name">Jasprit Bumrah</div><div class="squad-role">Right Arm Fast</div></div>
+        <div class="squad-card"><div class="squad-emoji">🎯</div><div class="squad-name">Ravindra Jadeja</div><div class="squad-role">All Rounder</div></div>
+      </div>
+    </div>
+    <div id="squad-odi" class="format-tabs">
+      <div class="squad-grid">
+        <div class="squad-card"><div class="squad-emoji">👑</div><div class="squad-name">Rohit Sharma</div><div class="squad-role">Right Hand Bat</div><span class="captain-badge">CAPTAIN</span></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Virat Kohli</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Shubman Gill</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">⚡</div><div class="squad-name">Hardik Pandya</div><div class="squad-role">All Rounder</div></div>
+        <div class="squad-card"><div class="squad-emoji">🎳</div><div class="squad-name">Jasprit Bumrah</div><div class="squad-role">Right Arm Fast</div></div>
+        <div class="squad-card"><div class="squad-emoji">🧤</div><div class="squad-name">KL Rahul</div><div class="squad-role">WK Batter</div></div>
+      </div>
+    </div>
+    <div id="squad-t20" class="format-tabs">
+      <div class="squad-grid">
+        <div class="squad-card"><div class="squad-emoji">👑</div><div class="squad-name">Suryakumar Yadav</div><div class="squad-role">Right Hand Bat</div><span class="captain-badge">CAPTAIN</span></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Virat Kohli</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">🏏</div><div class="squad-name">Shubman Gill</div><div class="squad-role">Right Hand Bat</div></div>
+        <div class="squad-card"><div class="squad-emoji">⚡</div><div class="squad-name">Hardik Pandya</div><div class="squad-role">All Rounder</div></div>
+        <div class="squad-card"><div class="squad-emoji">🎳</div><div class="squad-name">Jasprit Bumrah</div><div class="squad-role">Right Arm Fast</div></div>
+        <div class="squad-card"><div class="squad-emoji">🎯</div><div class="squad-name">Axar Patel</div><div class="squad-role">Left Arm Spin</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP BATTERS -->
+  <div class="section">
+    <div class="section-title">Best Batters</div>
+    <div class="tabs">
+      <div class="tab active" onclick="showFormat('bat', 'odi', this)">ODI</div>
+      <div class="tab" onclick="showFormat('bat', 'test', this)">TEST</div>
+      <div class="tab" onclick="showFormat('bat', 't20', this)">T20I</div>
+    </div>
+    <div id="bat-odi" class="format-tabs active">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Virat Kohli</h3><p>Right Hand Bat · Delhi</p></div><div class="player-stat"><div class="num">13,906</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Rohit Sharma</h3><p>Captain · Mumbai</p></div><div class="player-stat"><div class="num">10,709</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Shubman Gill</h3><p>Right Hand · Punjab</p></div><div class="player-stat"><div class="num">3,200+</div><div class="lbl">RUNS</div></div></div>
+    </div>
+    <div id="bat-test" class="format-tabs">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Virat Kohli</h3><p>Right Hand Bat</p></div><div class="player-stat"><div class="num">9,230+</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Cheteshwar Pujara</h3><p>Right Hand Bat</p></div><div class="player-stat"><div class="num">7,195</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Rohit Sharma</h3><p>Captain</p></div><div class="player-stat"><div class="num">4,300+</div><div class="lbl">RUNS</div></div></div>
+    </div>
+    <div id="bat-t20" class="format-tabs">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Rohit Sharma</h3><p>Captain</p></div><div class="player-stat"><div class="num">4,231</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Virat Kohli</h3><p>Right Hand Bat</p></div><div class="player-stat"><div class="num">4,188</div><div class="lbl">RUNS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Suryakumar Yadav</h3><p>#1 T20 Batter</p></div><div class="player-stat"><div class="num">3,700+</div><div class="lbl">RUNS</div></div></div>
+    </div>
+  </div>
+
+  <!-- TOP BOWLERS -->
+  <div class="section">
+    <div class="section-title">Best Bowlers</div>
+    <div class="tabs">
+      <div class="tab active" onclick="showFormat('bowl', 'odi', this)">ODI</div>
+      <div class="tab" onclick="showFormat('bowl', 'test', this)">TEST</div>
+      <div class="tab" onclick="showFormat('bowl', 't20', this)">T20I</div>
+    </div>
+    <div id="bowl-odi" class="format-tabs active">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Jasprit Bumrah</h3><p>Right Arm Fast · #1 Bowler</p></div><div class="player-stat"><div class="num">150+</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Ravindra Jadeja</h3><p>Left Arm Spin</p></div><div class="player-stat"><div class="num">220+</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Mohammed Shami</h3><p>Right Arm Fast</p></div><div class="player-stat"><div class="num">195+</div><div class="lbl">WICKETS</div></div></div>
+    </div>
+    <div id="bowl-test" class="format-tabs">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Anil Kumble</h3><p>Leg Spin · Legend</p></div><div class="player-stat"><div class="num">619</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Kapil Dev</h3><p>Right Arm Fast · Legend</p></div><div class="player-stat"><div class="num">434</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Jasprit Bumrah</h3><p>Right Arm Fast</p></div><div class="player-stat"><div class="num">190+</div><div class="lbl">WICKETS</div></div></div>
+    </div>
+    <div id="bowl-t20" class="format-tabs">
+      <div class="player-card"><div class="player-rank">1</div><div class="player-info"><h3>Yuzvendra Chahal</h3><p>Leg Spin</p></div><div class="player-stat"><div class="num">96</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">2</div><div class="player-info"><h3>Jasprit Bumrah</h3><p>Right Arm Fast</p></div><div class="player-stat"><div class="num">89</div><div class="lbl">WICKETS</div></div></div>
+      <div class="player-card"><div class="player-rank">3</div><div class="player-info"><h3>Axar Patel</h3><p>Left Arm Spin</p></div><div class="player-stat"><div class="num">72</div><div class="lbl">WICKETS</div></div></div>
+    </div>
+  </div>
+
+  <!-- RECORDS -->
+  <div class="section">
+    <div class="section-title">India Records</div>
+    <div class="record-card">
+      <div class="record-label">💥 BIGGEST SIX IN INTERNATIONAL CRICKET</div>
+      <div class="record-value">120+ metres</div>
+      <div class="record-detail">Yuvraj Singh vs England · 2007 T20 World Cup</div>
+    </div>
+    <div class="record-card">
+      <div class="record-label">🏏 HIGHEST INDIVIDUAL ODI SCORE (INDIA)</div>
+      <div class="record-value">264*</div>
+      <div class="record-detail">Rohit Sharma vs Sri Lanka · 2014 · Eden Gardens</div>
+    </div>
+    <div class="record-card">
+      <div class="record-label">🎳 MOST TEST WICKETS (INDIA)</div>
+      <div class="record-value">619</div>
+      <div class="record-detail">Anil Kumble · 132 Tests · 1990–2008</div>
+    </div>
+    <div class="record-card">
+      <div class="record-label">⭐ MOST ODI RUNS (ALL TIME)</div>
+      <div class="record-value">18,426</div>
+      <div class="record-detail">Sachin Tendulkar · The God of Cricket</div>
+    </div>
+    <div class="record-card">
+      <div class="record-label">🧤 BEST FIELDER (CURRENT SQUAD)</div>
+      <div class="record-value">Ravindra Jadeja</div>
+      <div class="record-detail">Considered the best fielder in world cricket</div>
+    </div>
+  </div>
+
+  <!-- YOUNG TALENTS -->
+  <div class="section">
+    <div class="section-title">Young Talents To Watch</div>
+    <div class="talent-card">
+      <div class="talent-emoji">⭐</div>
+      <div class="talent-info"><h3>Yashasvi Jaiswal</h3><p>Left Hand Opener · Mumbai · Age 22</p></div>
+      <span class="talent-tag">🔥 Rising Star</span>
+    </div>
+    <div class="talent-card">
+      <div class="talent-emoji">⭐</div>
+      <div class="talent-info"><h3>Shubman Gill</h3><p>Right Hand Bat · Punjab · Age 25</p></div>
+      <span class="talent-tag">🔥 Future Captain</span>
+    </div>
+    <div class="talent-card">
+      <div class="talent-emoji">⭐</div>
+      <div class="talent-info"><h3>Tilak Varma</h3><p>Left Hand Bat · Hyderabad · Age 22</p></div>
+      <span class="talent-tag">💫 Next Big Thing</span>
+    </div>
+    <div class="talent-card">
+      <div class="talent-emoji">⭐</div>
+      <div class="talent-info"><h3>Nitish Kumar Reddy</h3><p>All Rounder · Andhra · Age 21</p></div>
+      <span class="talent-tag">💫 All Rounder</span>
+    </div>
+    <div class="talent-card">
+      <div class="talent-emoji">⭐</div>
+      <div class="talent-info"><h3>Arshdeep Singh</h3><p>Left Arm Fast · Punjab · Age 25</p></div>
+      <span class="talent-tag">🎳 Death Bowler</span>
+    </div>
+  </div>
+
+  <!-- CRICKET HISTORY -->
+  <div class="section">
+    <div class="section-title">India Cricket History</div>
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-year">1932</div><div class="timeline-content"><h3>First Test Match</h3><p>India played their first ever Test match vs England at Lord's</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">1983</div><div class="timeline-content"><h3>First World Cup 🏆</h3><p>Kapil Dev led India to their first Cricket World Cup victory vs West Indies</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2007</div><div class="timeline-content"><h3>First T20 World Cup 🏆</h3><p>MS Dhoni led young India to win inaugural T20 World Cup vs Pakistan</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2011</div><div class="timeline-content"><h3>ODI World Cup 🏆</h3><p>Dhoni's six at Wankhede — India won the World Cup on home soil</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2013</div><div class="timeline-content"><h3>Champions Trophy 🏆</h3><p>India won ICC Champions Trophy under MS Dhoni in England</p></div></div>
+      <div class="timeline-item"><div class="timeline-year">2024</div><div class="timeline-content"><h3>T20 World Cup 🏆</h3><p>Rohit Sharma led India to T20 World Cup glory in West Indies & USA</p></div></div>
+    </div>
+  </div>
+
+  <footer>
+    Built by <span>Anuj</span> · Data from Cricbuzz API · <span>India Cricket Hub</span>
+  </footer>
 
   <script>
     const API_KEY = 'ff7ac8c32bmsh345a4a86d1d93c6p13fabjsnee11e52d3655';
@@ -60,30 +346,57 @@ PRJOECT BY @torque
     .then(data => {
       const container = document.getElementById('matches');
       container.innerHTML = '';
-      const matches = data.typeMatches?.[0]?.seriesMatches?.[0]?.seriesAdWrapper?.matches || [];
-      if (matches.length === 0) {
-        container.innerHTML = '<div class="loading">No live matches right now.</div>';
+      const allMatches = [];
+      data.typeMatches?.forEach(type => {
+        type.seriesMatches?.forEach(s => {
+          s.seriesAdWrapper?.matches?.forEach(m => allMatches.push(m));
+        });
+      });
+      if (allMatches.length === 0) {
+        container.innerHTML = '<div class="loading">No live matches right now. Check back during a match! 🏏</div>';
         return;
       }
-      matches.slice(0, 5).forEach(m => {
+      allMatches.slice(0, 5).forEach(m => {
         const info = m.matchInfo;
         const card = document.createElement('div');
-        card.className = 'match-card';
+        card.className = 'player-card';
         card.innerHTML = `
-          <div class="match-header">
-            <div class="match-vs">${info.team1.teamName} vs ${info.team2.teamName}</div>
-            <span class="match-result">LIVE</span>
+          <div class="player-rank">🔴</div>
+          <div class="player-info">
+            <h3>${info.team1.teamName} vs ${info.team2.teamName}</h3>
+            <p>${info.matchDesc} · ${info.venueInfo?.ground || 'TBA'}</p>
           </div>
-          <div class="match-detail">${info.matchDesc} · ${info.venueInfo?.ground || ''}</div>
+          <div class="player-stat"><div class="num" style="font-size:0.8rem;color:#ff4444">LIVE</div></div>
         `;
         container.appendChild(card);
       });
     })
     .catch(() => {
-      document.getElementById('matches').innerHTML = '<div class="loading">Could not load live matches.</div>';
+      document.getElementById('matches').innerHTML = '<div class="loading">Could not load matches. Try again later.</div>';
     });
+
+    function showFormat(section, format, el) {
+      ['odi','test','t20'].forEach(f => {
+        const el2 = document.getElementById(`${section}-${f}`);
+        if(el2) el2.classList.remove('active');
+      });
+      document.getElementById(`${section}-${format}`).classList.add('active');
+      el.closest('.section').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function showSquad(format, el) {
+      ['test','odi','t20'].forEach(f => {
+        const el2 = document.getElementById(`squad-${f}`);
+        if(el2) el2.classList.remove('active');
+      });
+      document.getElementById(`squad-${format}`).classList.add('active');
+      el.closest('.section').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
   </script>
 </body>
 </html>
+```
 
-
+Go to GitHub → cricket-stats → index.html → pencil → **Ctrl+A** → **Delete** → paste → **Commit**! 🏏🇮🇳
